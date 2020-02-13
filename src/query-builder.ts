@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import * as firebase from 'firebase'
 import { StaticModel, Model } from './model'
 

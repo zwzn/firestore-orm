@@ -1,4 +1,5 @@
 import { QueryBuilder } from './query-builder'
+/// <reference lib="dom" />
 import * as firebase from 'firebase'
 
 export interface FieldOptions {
