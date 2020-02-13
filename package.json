@@ -1,0 +1,32 @@
+{
+  "name": "firestore-orm",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "author": "Adam Bibby",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zwzn/firestore-orm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zwzn/firestore-orm/issues"
+  },
+  "homepage": "https://github.com/zwzn/firestore-orm#readme",
+  "devDependencies": {
+    "@types/firebase": "^3.2.1",
+    "@types/react": "^16.9.19",
+    "typescript": "^3.7.5"
+  },
+  "peerDependencies": {
+    "firebase": "^7.8.1",
+    "react": "^16.12.0"
+  },
+  "dependencies": {}
+}
