@@ -6,7 +6,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -21,7 +21,11 @@
   "homepage": "https://github.com/zwzn/firestore-orm#readme",
   "devDependencies": {
     "@types/firebase": "^3.2.1",
+    "@types/jest": "^25.1.2",
     "@types/react": "^16.9.19",
+    "jest": "^25.1.0",
+    "mock-cloud-firestore": "^0.11.0",
+    "ts-jest": "^25.2.0",
     "typescript": "^3.7.5"
   },
   "peerDependencies": {

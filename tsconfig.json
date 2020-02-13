@@ -8,6 +8,10 @@
             "ES2015.Promise"
         ],
         "outDir": "./dist",
-        "declaration": true
+        "declaration": true,
+        "typeRoots": [
+            "./node_modules/@types",
+            "./definitions"
+        ]
     }
 }
