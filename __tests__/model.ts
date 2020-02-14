@@ -1,37 +1,43 @@
 import { Model, QueryBuilder } from "../src";
-import MockFirebase from 'mock-cloud-firebase'
+import MockFirebase from 'mock-cloud-firestore'
 
-const fixtureData = {
+const defaultFixtureData = {
     __collection__: {
         test: {
             __doc__: {
                 test: {
-                    age: 15,
-                    username: 'user_a',
+                    foo: 'test',
+                    bar: 1,
+                    baz: { 'a': 1 },
                 }
             }
         }
     }
 };
 
-const firebase = new MockFirebase(fixtureData);
-test('Model.construct', () => {
-    class Test extends Model {
+function TestFactory(fixtureData: MockFirebase.FixtureData = defaultFixtureData) {
+    const firebase = new MockFirebase(fixtureData);
+    return class extends Model {
         public collection = firebase.firestore().collection('test')
+
+        @Model.field()
+        foo: string = ''
     }
+}
+
+test('Model.construct', () => {
+    const Test = TestFactory()
     expect(new Test()).toBeInstanceOf(Model)
 })
 
 test('Model.builder', () => {
-    class Test extends Model {
-        public collection = firebase.firestore().collection('test')
-    }
+    const Test = TestFactory()
     expect(Test.builder()).toBeInstanceOf(QueryBuilder)
 })
 
 test('Model.find', async () => {
-    class Test extends Model {
-        public collection = firebase.firestore().collection('test')
-    }
-    expect(await Test.find('test')).toBeInstanceOf(Test)
+    const Test = TestFactory()
+    const t = await Test.find('test')
+    expect(t).toBeInstanceOf(Test)
+    expect(t!.foo).toBe('test')
 })
