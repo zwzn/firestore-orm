@@ -127,6 +127,7 @@ export abstract class Model {
 
     public toJSON(): unknown {
         return {
+            id: this.id,
             ...this.original,
             ...this.attributes,
         }
