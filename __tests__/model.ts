@@ -79,6 +79,9 @@ test('modify', async () => {
     expect(t.foo).not.toBe('modify')
     t.foo = 'modify'
     await t.save()
+    console.log(workingDB.__collection__.test.__doc__);
+
+
     expect((await Test.find('test'))!.foo).toBe('modify')
 })
 
@@ -89,10 +92,10 @@ test('query', async () => {
     expect(t[0]).toBeInstanceOf(Test)
 })
 
-test('delete', async () => {
-    const t = (await Test.find('test'))!
+// test('delete', async () => {
+//     const t = (await Test.find('test'))!
 
-    expect(t).not.toBe(null)
-    await t.delete()
-    expect(await Test.find('test')).toBe(null)
-})
+//     expect(t).not.toBe(null)
+//     await t.delete()
+//     expect(await Test.find('test')).toBe(null)
+// })

@@ -8,6 +8,7 @@ export interface FieldOptions {
 
 export interface StaticModel<T extends Model> {
     options: { [field: string]: FieldOptions | undefined }
+    fromDoc: Function // this causes issues if it has the proper type
     new(): T
 }
 
@@ -22,12 +23,7 @@ export abstract class Model {
     public static async find<T extends Model>(this: StaticModel<T>, id: string): Promise<T | null> {
         const m = new this()
         const doc = await m.collection.doc(id).get()
-        Object.assign(m, {
-            ...doc.data(),
-            id: doc.id,
-        })
-        m.postSave()
-        return m
+        return this.fromDoc(doc)
     }
 
     public static subscribe<T extends Model>(
@@ -36,14 +32,19 @@ export abstract class Model {
         callback: (models: T) => void,
     ): () => void {
         return (new this()).collection.doc(id).onSnapshot(doc => {
-            const m = new this()
-            Object.assign(m, {
-                ...doc.data(),
-                id: doc.id,
-            })
-            m.postSave()
-            callback(m)
+            callback(this.fromDoc(doc))
         })
+    }
+
+    public static fromDoc<T extends Model>(this: StaticModel<T>, doc: firebase.firestore.DocumentSnapshot): T {
+        const m = new this()
+        m.original = {
+            ...m.attributes,
+            ...doc.data(),
+        }
+        m.attributes = {};
+        (m as any).id = doc.id
+        return m
     }
 
     public static field(options: FieldOptions = {}): (type: Model, f: string) => void {
@@ -94,6 +95,7 @@ export abstract class Model {
             }
             saveObject[key] = value
         }
+        console.log(saveObject);
 
         if (this.id === undefined) {
             const docRef = await this.collection.add(saveObject);
@@ -101,17 +103,15 @@ export abstract class Model {
         } else {
             await this.collection.doc(this.id).set(saveObject, { merge: true })
         }
-        this.postSave()
-        this.saved()
-    }
-    public postSave(): void {
+
         this.original = {
             ...this.original,
             ...this.attributes,
         }
         this.attributes = {}
-
+        this.saved()
     }
+
     public async delete(): Promise<void> {
         this.deleting()
         if (this.id === undefined) {

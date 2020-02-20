@@ -43,28 +43,12 @@ export class QueryBuilder<T extends Model> {
     public async get(): Promise<T[]> {
         const ref = await this.query.get()
 
-        return ref.docs.map(doc => {
-            const model = new this.staticModel()
-            Object.assign(model, {
-                ...doc.data(),
-                id: doc.id,
-            })
-            model.postSave()
-            return model
-        })
+        return ref.docs.map(doc => this.staticModel.fromDoc(doc))
     }
 
     public subscribe(callback: (models: T[]) => void): () => void {
         return this.query.onSnapshot(ref => {
-            callback(ref.docs.map(doc => {
-                const model = new this.staticModel()
-                Object.assign(model, {
-                    ...doc.data(),
-                    id: doc.id,
-                })
-                model.postSave()
-                return model
-            }))
+            callback(ref.docs.map(doc => this.staticModel.fromDoc(doc)))
         })
     }
 
