@@ -48,7 +48,12 @@ export class QueryBuilder<T extends Model> {
 
     public subscribe(callback: (models: T[]) => void): () => void {
         return this.query.onSnapshot(ref => {
-            callback(ref.docs.map(doc => this.staticModel.fromDoc(doc)))
+            const changes = ref.docChanges()
+            callback(
+                changes
+                    .filter(change => change.type !== 'removed')
+                    .map(change => this.staticModel.fromChange(change))
+            )
         })
     }
 

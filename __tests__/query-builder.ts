@@ -51,49 +51,7 @@ class Test extends Model {
 }
 
 
-test('Model.construct', () => {
-    expect(new Test()).toBeInstanceOf(Model)
+test('get', () => {
+    Test.builder().get()
 })
 
-test('Model.builder', () => {
-    expect(Test.builder()).toBeInstanceOf(QueryBuilder)
-})
-
-test('Model.find', async () => {
-    const t = await Test.find('test')
-    expect(t).toBeInstanceOf(Test)
-    expect(t!.foo).toBe('test')
-})
-
-test('create', async () => {
-    const t = new Test()
-    t.foo = 'create'
-    expect(t.id).toBe(undefined)
-    await t.save()
-    expect(t.id).not.toBe(undefined)
-})
-
-test('modify', async () => {
-    const t = (await Test.find('test'))!
-
-    expect(t.foo).not.toBe('modify')
-    t.foo = 'modify'
-    await t.save()
-
-    expect((await Test.find('test'))!.foo).toBe('modify')
-})
-
-test('query', async () => {
-    const t = (await Test.builder().where('foo', '==', 'test').get())!
-
-    expect(t.length).toBe(1)
-    expect(t[0]).toBeInstanceOf(Test)
-})
-
-// test('delete', async () => {
-//     const t = (await Test.find('test'))!
-
-//     expect(t).not.toBe(null)
-//     await t.delete()
-//     expect(await Test.find('test')).toBe(null)
-// })

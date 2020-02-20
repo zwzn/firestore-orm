@@ -9,6 +9,7 @@ export interface FieldOptions {
 export interface StaticModel<T extends Model> {
     options: { [field: string]: FieldOptions | undefined }
     fromDoc: Function // this causes issues if it has the proper type
+    fromChange: Function // this causes issues if it has the proper type
     new(): T
 }
 
@@ -42,8 +43,17 @@ export abstract class Model {
             ...m.attributes,
             ...doc.data(),
         }
-        m.attributes = {};
-        (m as any).id = doc.id
+        m.attributes = {}
+        m.doc = doc
+
+        const anyM = m as any
+        anyM.id = doc.id
+
+        return m
+    }
+    public static fromChange<T extends Model>(this: StaticModel<T>, change: firebase.firestore.DocumentChange): T {
+        const m = this.fromDoc(change.doc)
+        m.change = change
         return m
     }
 
@@ -78,6 +88,15 @@ export abstract class Model {
 
     private original: { [key: string]: any } = {}
     private attributes: { [key: string]: any } = {}
+    private doc: firebase.firestore.DocumentSnapshot | undefined
+    private change: firebase.firestore.DocumentChange | undefined
+
+    public get fromCache(): boolean {
+        return this.doc?.metadata.fromCache ?? false
+    }
+    public get changeType(): firebase.firestore.DocumentChangeType | 'unknown' {
+        return this.change?.type ?? 'unknown'
+    }
 
     public async save(): Promise<void> {
         const saveObject: any = {}
@@ -95,7 +114,6 @@ export abstract class Model {
             }
             saveObject[key] = value
         }
-        console.log(saveObject);
 
         if (this.id === undefined) {
             const docRef = await this.collection.add(saveObject);
