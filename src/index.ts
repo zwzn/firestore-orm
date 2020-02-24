@@ -1,3 +1,3 @@
 export { Model } from './model'
 export { QueryBuilder } from './query-builder'
-export { useQuery } from './hook'
+export { useQuery, useQueryChanges } from './hook'
