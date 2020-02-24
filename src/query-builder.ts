@@ -46,10 +46,11 @@ export class QueryBuilder<T extends Model> {
         return ref.docs.map(doc => this.staticModel.fromDoc(doc))
     }
 
-    public subscribe(callback: (models: T[]) => void): () => void {
+    public subscribe(callback: (models: T[], changes: Map<string, string>) => void): () => void {
         return this.query.onSnapshot(ref => {
             callback(
-                ref.docs.map(doc => this.staticModel.fromDoc(doc))
+                ref.docs.map(doc => this.staticModel.fromDoc(doc)),
+                new Map(ref.docChanges().map(c => [c.doc.id, c.type]))
             )
         })
     }
