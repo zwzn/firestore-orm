@@ -51,11 +51,6 @@ export abstract class Model {
 
         return m
     }
-    public static fromChange<T extends Model>(this: StaticModel<T>, change: firebase.firestore.DocumentChange): T {
-        const m = this.fromDoc(change.doc)
-        m.change = change
-        return m
-    }
 
     public static field(options: FieldOptions = {}): (type: Model, f: string) => void {
         return (type, f) => {
@@ -89,18 +84,20 @@ export abstract class Model {
     private original: { [key: string]: any } = {}
     private attributes: { [key: string]: any } = {}
     private doc: firebase.firestore.DocumentSnapshot | undefined
-    private change: firebase.firestore.DocumentChange | undefined
 
     public get fromCache(): boolean {
         return this.doc?.metadata.fromCache ?? false
     }
-    public get changeType(): firebase.firestore.DocumentChangeType | 'unknown' {
-        return this.change?.type ?? 'unknown'
-    }
 
     public async save(): Promise<void> {
         const saveObject: any = {}
+        const creating = this.id === undefined
 
+        if (creating) {
+            this.creating()
+        } else {
+            this.updating()
+        }
         this.saving()
 
         for (const key of Object.keys((this.constructor as StaticModel<Model>).options)) {
@@ -115,7 +112,7 @@ export abstract class Model {
             saveObject[key] = value
         }
 
-        if (this.id === undefined) {
+        if (creating) {
             const docRef = await this.collection.add(saveObject);
             (this as any).id = docRef.id
         } else {
@@ -127,6 +124,12 @@ export abstract class Model {
             ...this.attributes,
         }
         this.attributes = {}
+
+        if (creating) {
+            this.created()
+        } else {
+            this.updated()
+        }
         this.saved()
     }
 
@@ -151,6 +154,18 @@ export abstract class Model {
         }
     }
 
+    protected creating(): void {
+        // this should stay empty
+    }
+    protected created(): void {
+        // this should stay empty
+    }
+    protected updating(): void {
+        // this should stay empty
+    }
+    protected updated(): void {
+        // this should stay empty
+    }
     protected saving(): void {
         // this should stay empty
     }
