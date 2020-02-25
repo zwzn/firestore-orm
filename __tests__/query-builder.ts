@@ -51,7 +51,10 @@ class Test extends Model {
 }
 
 
-test('get', () => {
-    Test.builder().get()
+test('get', async () => {
+    const models = await Test.builder().get()
+
+
+    expect(models.length).toBe(2)
 })
 

@@ -55,17 +55,6 @@ export class QueryBuilder<T extends Model> {
         })
     }
 
-    public changes(callback: (models: T[]) => void): () => void {
-        return this.query.onSnapshot(ref => {
-            const changes = ref.docChanges()
-            callback(
-                changes
-                    .filter(change => change.type !== 'removed')
-                    .map(change => this.staticModel.fromChange(change))
-            )
-        })
-    }
-
     public equal(q: QueryBuilder<T>): boolean {
         return this.query.isEqual(q.query)
     }

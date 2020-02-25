@@ -9,7 +9,6 @@ export interface FieldOptions {
 export interface StaticModel<T extends Model> {
     options: { [field: string]: FieldOptions | undefined }
     fromDoc: Function // this causes issues if it has the proper type
-    fromChange: Function // this causes issues if it has the proper type
     new(): T
 }
 
