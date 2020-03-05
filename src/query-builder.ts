@@ -40,6 +40,14 @@ export class QueryBuilder<T extends Model> {
         )
     }
 
+    public after(m: T): QueryBuilder<T> {
+        return new QueryBuilder(
+            this.staticModel,
+            this.query.startAfter(m),
+            this.key + ' after' + JSON.stringify(m.id)
+        )
+    }
+
     public async get(): Promise<T[]> {
         const ref = await this.query.get()
 
